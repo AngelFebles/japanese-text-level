@@ -48,7 +48,7 @@ def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dic
     return wanikani
 
 
-def get_kanji_wanikani_level(kanji_set: set, wanikani_kanji: dict) -> int:
+def get_kanji_wanikani_level(raw_text: str, wanikani_kanji: dict) -> int:
     """
     Returns the highest WaniKani level among a set of kanji.
 
@@ -61,6 +61,8 @@ def get_kanji_wanikani_level(kanji_set: set, wanikani_kanji: dict) -> int:
         int: The highest WaniKani level found among the kanji in the set.
                 Returns 1 if no kanji in the set is found in the dataset.
     """
+
+    kanji_set = get_kanjis_from_file(raw_text)
 
     max_level = 1
 
@@ -102,36 +104,29 @@ def get_vocab_wanikani_level(raw_text: str, wanikani_vocab: dict) -> int:
     # return max_level
 
 
-def get_kanjis_from_file(file_path: str) -> set:
+def get_kanjis_from_file(raw_text: str) -> set:
     """
-    Read a text file and return a set of all kanjis it contains.
+    Filters the raw_text and returns a set of all* kanjis it contains.
+
+    *This solution for filtering with regex doesn't cover 100% of kanjis,
+    it excludes some obscure/historical/incredibly rare characters.
+    ex: 〆 (Unicode: U+3006) or 𦫖 (Unicode: U+26AD6)
+    It is still good, however, for ~99.9% of cases.
+
+    Since none of the omitted characters are present
+    in Wanikani/JLPT/Jōyō kanji lists (the scope of this project)
+    I implemented this solution.
+    For a 100% one, refer to: https://ayaka.shn.hk/hanregex/
 
     Args:
-        file_path (str): location of the raw text input file.
+        raw_text (str): the raw text extracted from the input file.
 
     Returns:
-        set: Set of all kanjis from the text file.
+        set: Set of all kanjis from the string.
 
     """
 
-    with open(file_path, "r", encoding="utf-8") as f:
-        raw_text = f.read()
-
-    # This solution for filtering with regex doesn't cover 100% of kanjis,
-    # it excludes some obscure/historical/incredibly rare characters.
-    # ex: 〆 (Unicode: U+3006) or 𦫖 (Unicode: U+26AD6)
-    # It is still good for ~99.9% of cases.
-
-    # Since none of the omitted characters are present
-    # in Wanikani/JLPT/Jōyō kanji lists (the scope of this project)
-    # I implemented this solution.
-    # For a 100% one, refer to: https://ayaka.shn.hk/hanregex/
-
     set_of_kanjis = set(re.findall(r"\p{Script=Han}", raw_text))
-
-    # print(set_of_kanjis)
-
-    # print(set_of_kanjis)
 
     return set_of_kanjis
 
@@ -141,17 +136,13 @@ def main():
     wanikani_kanji_path = "files/kanjis_wanikani_levels.json"
     wanikani_vocab_path = "files/vocabs_wanikani_levels.json"
 
-    wanikani = get_wanikani_data(wanikani_kanji_path, wanikani_vocab_path)
+    wanikani_data = get_wanikani_data(wanikani_kanji_path, wanikani_vocab_path)
 
-    file_path = "files/text.txt"
-    # with open(file_path, "r", encoding="utf-8") as f:
-    #     raw_text = f.read()
+    input_file_path = "files/text.txt"
+    with open(input_file_path, "r", encoding="utf-8") as f:
+        raw_text = f.read()
 
-    kanji_set = get_kanjis_from_file(file_path)
-
-    # print(wanikani["vocab"].keys())
-
-    wanikani_level_kanji = get_kanji_wanikani_level(kanji_set, wanikani["kanji"])
+    wanikani_level_kanji = get_kanji_wanikani_level(raw_text, wanikani_data["kanji"])
     print("Minimum Wanikani level to read: ", wanikani_level_kanji)
 
 

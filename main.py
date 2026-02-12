@@ -15,6 +15,7 @@ def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dic
 
     Args:
         wanikani_kanji_path (str): Path to the kanji JSON file by level.
+
         wanikani_vocab_path (str): Path to the vocabulary JSON file by level.
 
     Returns:
@@ -50,12 +51,12 @@ def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dic
 
 def get_kanji_wanikani_level(raw_text: str, wanikani_kanji: dict) -> int:
     """
-    Returns the highest WaniKani level among a set of kanji.
+    Returns the highest WaniKani level among the kanji in raw_text.
 
     Args:
-        kanji_set (set[str]): Set of kanji characters to look up.
-        wanikani_kanji (dict[str, int]): Mapping of individual kanji
-            characters to their WaniKani levels (from 1 to 60).
+        raw_text (str): Raw input text from which kanji will be extracted.
+
+        wanikani_kanji (dict[str, int]): Mapping of kanji → level.
 
     Returns:
         int: The highest WaniKani level found among the kanji in the set.
@@ -78,37 +79,44 @@ def get_kanji_wanikani_level(raw_text: str, wanikani_kanji: dict) -> int:
 # WIP
 def get_vocab_wanikani_level(raw_text: str, wanikani_vocab: dict) -> int:
     """
-    Returns the highest WaniKani level among a set of vocabs.
+    Returns the highest WaniKani level among the vocab in raw_text.
 
     Args:
-        kanji_set (set[str]): Set of kanji characters to look up.
-        wanikani_kanji (dict[str, int]): Mapping of individual kanji
-            characters to their WaniKani levels (from 1 to 60).
+        raw_text (str): Raw input text to search for vocabulary items.
+
+        wanikani_vocab (dict[str, int]): Mapping of vocabulary → level.
 
     Returns:
         int: The highest WaniKani level found among the kanji in the set.
                 Returns 1 if no kanji in the set is found in the dataset.
     """
 
-    # get vocabs from raw text
+    # find vocabs from raw_text
+    found_vocab = []
 
-    # final step
-    # max_level = 1
+    for word in wanikani_vocab.keys():
+        for match in re.finditer(re.escape(word), raw_text):
+            found_vocab.append(word)
 
-    # for vocab in vocab_set:
-    #     if vocab in wanikani_vocab:
-    #         level = int(wanikani_vocab.get(vocab))
-    #         if max_level < level:
-    #             max_level = level
+    found_vocab_set = set(found_vocab)
 
-    # return max_level
+    # final step, get vocab levels
+    max_level = 1
+
+    for vocab in found_vocab_set:
+        if vocab in wanikani_vocab:
+            level = int(wanikani_vocab.get(vocab))
+            if max_level < level:
+                max_level = level
+
+    return max_level
 
 
 def get_kanjis_from_file(raw_text: str) -> set:
     """
-    Filters the raw_text and returns a set of all* kanjis it contains.
+    Extracts all Han-script characters from raw_text and returns them as a set.
 
-    *This solution for filtering with regex doesn't cover 100% of kanjis,
+    This solution for filtering with regex doesn't cover 100% of kanjis,
     it excludes some obscure/historical/incredibly rare characters.
     ex: 〆 (Unicode: U+3006) or 𦫖 (Unicode: U+26AD6)
     It is still good, however, for ~99.9% of cases.
@@ -131,6 +139,11 @@ def get_kanjis_from_file(raw_text: str) -> set:
     return set_of_kanjis
 
 
+def get_vocab_from_file(raw_text: str) -> set:
+
+    return []
+
+
 def main():
 
     wanikani_kanji_path = "files/kanjis_wanikani_levels.json"
@@ -142,8 +155,11 @@ def main():
     with open(input_file_path, "r", encoding="utf-8") as f:
         raw_text = f.read()
 
+    wanikani_level_vocab = get_vocab_wanikani_level(raw_text, wanikani_data["vocab"])
+    print("Minimum Wanikani level to read vocab: ", wanikani_level_vocab)
+
     wanikani_level_kanji = get_kanji_wanikani_level(raw_text, wanikani_data["kanji"])
-    print("Minimum Wanikani level to read: ", wanikani_level_kanji)
+    print("Minimum Wanikani level to read kanji: ", wanikani_level_kanji)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 import json
 import regex as re
+import sys
+import numpy as np
 
 
 def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dict:
@@ -34,14 +36,14 @@ def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dic
         # wanikani["kanji"] = json.load(file)
         for level in temp:
             for kanji in temp[level]:
-                wanikani["kanji"][kanji] = level
+                wanikani["kanji"][kanji] = int(level)
 
     with open(wanikani_vocab_path, "r") as file:
         temp = json.load(file)
         # wanikani["kanji"] = json.load(file)
         for level in temp:
             for vocab in temp[level]:
-                wanikani["vocab"][vocab] = level
+                wanikani["vocab"][vocab] = int(level)
 
     # print("一" in wanikani["kanji"])
     # print(wanikani["kanji"].get("一"))
@@ -49,9 +51,9 @@ def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dic
     return wanikani
 
 
-def get_kanji_wanikani_level(raw_text: str, wanikani_kanji: dict) -> int:
+def get_kanji_wanikani_level(raw_text: str, wanikani_kanji: dict) -> dict:
     """
-    Returns the highest WaniKani level among the kanji in raw_text.
+    Returns mapping of WaniKani level needed to read difference percentages of the kanji in raw_text.
 
     Args:
         raw_text (str): Raw input text from which kanji will be extracted.
@@ -59,36 +61,60 @@ def get_kanji_wanikani_level(raw_text: str, wanikani_kanji: dict) -> int:
         wanikani_kanji (dict[str, int]): Mapping of kanji → level.
 
     Returns:
-        int: The highest WaniKani level found among the kanji in the set.
-                Returns 1 if no kanji in the set is found in the dataset.
+        dict: mapping of the levels needed to read different percentaged of the raw text
+              {
+                percentage → level
+              }
+
     """
 
-    kanji_set = get_kanjis_from_file(raw_text)
+    # This solution for filtering with regex (Script=Han) doesn't cover 100% of kanjis,
+    # it excludes some obscure/historical/incredibly rare characters.
+    # ex: 〆 (Unicode: U+3006) or 𦫖 (Unicode: U+26AD6)
+    # It is still good, however, for ~99.9% of cases.
 
-    max_level = 1
+    # Since none of the omitted characters are present
+    # in Wanikani/JLPT/Jōyō kanji lists (the scope of this project)
+    # I implemented this solution.
+    # For a 100% one, refer to: https://ayaka.shn.hk/hanregex/
 
-    for kanji in kanji_set:
-        if kanji in wanikani_kanji:
-            level = int(wanikani_kanji.get(kanji))
-            if max_level < level:
-                max_level = level
+    kanjis_text = set(re.findall(r"\p{Script=Han}", raw_text))
 
-    return max_level
+    kanji_levels = []
+
+    for item in kanjis_text:
+        if item in wanikani_kanji.keys():
+            kanji_levels.append(wanikani_kanji[item])
+        else:
+            kanji_levels.append(61)
+    if kanji_levels == []:
+        return []
+    else:
+        return [
+            {
+                "80%": int(np.percentile(kanji_levels, 80)),
+                "85%": int(np.percentile(kanji_levels, 85)),
+                "90%": int(np.percentile(kanji_levels, 90)),
+                "100%": int(np.percentile(kanji_levels, 95)),
+            }
+        ]
 
 
 # WIP
 def get_vocab_wanikani_level(raw_text: str, wanikani_vocab: dict) -> int:
     """
-    Returns the highest WaniKani level among the vocab in raw_text.
+     Returns mapping of WaniKani level needed to read difference percentages of the vocab in raw_text.
 
     Args:
-        raw_text (str): Raw input text to search for vocabulary items.
+        raw_text (str): Raw input text from which kanji will be extracted.
 
-        wanikani_vocab (dict[str, int]): Mapping of vocabulary → level.
+        wanikani_vocab (dict[str, int]): Mapping of vocab → level.
 
     Returns:
-        int: The highest WaniKani level found among the kanji in the set.
-                Returns 1 if no kanji in the set is found in the dataset.
+        dict: mapping of the levels needed to read different percentaged of the raw text
+              {
+                percentage → level
+              }
     """
 
     # find vocabs from raw_text
@@ -101,66 +127,81 @@ def get_vocab_wanikani_level(raw_text: str, wanikani_vocab: dict) -> int:
     found_vocab_set = set(found_vocab)
 
     # final step, get vocab levels
-    max_level = 1
 
-    for vocab in found_vocab_set:
-        if vocab in wanikani_vocab:
-            level = int(wanikani_vocab.get(vocab))
-            if max_level < level:
-                max_level = level
+    vocab_levels = []
 
-    return max_level
-
-
-def get_kanjis_from_file(raw_text: str) -> set:
-    """
-    Extracts all Han-script characters from raw_text and returns them as a set.
-
-    This solution for filtering with regex doesn't cover 100% of kanjis,
-    it excludes some obscure/historical/incredibly rare characters.
-    ex: 〆 (Unicode: U+3006) or 𦫖 (Unicode: U+26AD6)
-    It is still good, however, for ~99.9% of cases.
-
-    Since none of the omitted characters are present
-    in Wanikani/JLPT/Jōyō kanji lists (the scope of this project)
-    I implemented this solution.
-    For a 100% one, refer to: https://ayaka.shn.hk/hanregex/
-
-    Args:
-        raw_text (str): the raw text extracted from the input file.
-
-    Returns:
-        set: Set of all kanjis from the string.
-
-    """
-
-    set_of_kanjis = set(re.findall(r"\p{Script=Han}", raw_text))
-
-    return set_of_kanjis
+    for item in found_vocab_set:
+        if item in wanikani_vocab.keys():
+            vocab_levels.append(wanikani_vocab[item])
+        else:
+            vocab_levels.append(61)
+    if vocab_levels == []:
+        return []
+    else:
+        return [
+            {
+                "80%": int(np.percentile(vocab_levels, 80)),
+                "85%": int(np.percentile(vocab_levels, 85)),
+                "90%": int(np.percentile(vocab_levels, 90)),
+                "100%": int(np.percentile(vocab_levels, 95)),
+            }
+        ]
 
 
-def get_vocab_from_file(raw_text: str) -> set:
+# def get_kanjis_from_file(raw_text: str) -> set:
+#     """
+#     Extracts all Han-script characters from raw_text and returns them as a set.
 
-    return []
+#     This solution for filtering with regex doesn't cover 100% of kanjis,
+#     it excludes some obscure/historical/incredibly rare characters.
+#     ex: 〆 (Unicode: U+3006) or 𦫖 (Unicode: U+26AD6)
+#     It is still good, however, for ~99.9% of cases.
+
+#     Since none of the omitted characters are present
+#     in Wanikani/JLPT/Jōyō kanji lists (the scope of this project)
+#     I implemented this solution.
+#     For a 100% one, refer to: https://ayaka.shn.hk/hanregex/
+
+#     Args:
+#         raw_text (str): the raw text extracted from the input file.
+
+#     Returns:
+#         set: Set of all kanjis from the string.
+
+#     """
+
+#     set_of_kanjis = set(re.findall(r"\p{Script=Han}", raw_text))
+
+#     return set_of_kanjis
 
 
-def main():
+# def get_vocab_from_file(raw_text: str) -> set:
+
+#     return []
+
+
+def main(input_file_path):
 
     wanikani_kanji_path = "files/kanjis_wanikani_levels.json"
     wanikani_vocab_path = "files/vocabs_wanikani_levels.json"
 
     wanikani_data = get_wanikani_data(wanikani_kanji_path, wanikani_vocab_path)
+    # print(wanikani_data["kanji"])
 
-    input_file_path = "files/text.txt"
     with open(input_file_path, "r", encoding="utf-8") as f:
         raw_text = f.read()
-
-    wanikani_level_vocab = get_vocab_wanikani_level(raw_text, wanikani_data["vocab"])
-    print("Minimum Wanikani level to read vocab: ", wanikani_level_vocab)
 
     wanikani_level_kanji = get_kanji_wanikani_level(raw_text, wanikani_data["kanji"])
     print("Minimum Wanikani level to read kanji: ", wanikani_level_kanji)
 
+    wanikani_level_vocab = get_vocab_wanikani_level(raw_text, wanikani_data["vocab"])
+    print("Minimum Wanikani level to read vocab: ", wanikani_level_vocab)
+
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+
+    else:
+        input_file_path = "files/text.txt"
+        main(input_file_path)

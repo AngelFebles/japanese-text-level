@@ -1,7 +1,16 @@
+"""
+japanese-text-level
+
+This module processes Japanese text files to determine the WaniKani level
+required to understand specific percentages of the kanji and vocabulary
+found within the text.
+"""
+
 import json
-import regex as re
 import sys
+
 import numpy as np
+import regex as re
 
 
 def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dict:
@@ -90,8 +99,7 @@ def get_kanji_wanikani_levels(raw_text: str, wanikani_kanji: dict) -> dict:
         }
 
 
-# WIP
-def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> int:
+def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> dict:
     """
      Returns mapping of WaniKani level needed to read difference percentages of the vocab in raw_text.
 
@@ -109,9 +117,17 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> int:
 
     found_vocab = []
 
-    pattern = re.compile(
-        f"(?=({'|'.join(sorted(map(re.escape, wanikani_vocab), key=len, reverse=True))}))"
-    )
+    # Code runs well if we unify the pattern creation into a single expression
+    # but type checkers complain for [no-matching-overload] if you don't
+    # separate re.compile and the 'join' call
+
+    vocab_keys = list(wanikani_vocab.keys())
+    vocab_keys.sort(key=len, reverse=True)
+    escaped_vocab = [re.escape(word) for word in vocab_keys]
+
+    joined_pattern = "|".join(escaped_vocab)
+
+    pattern = re.compile(f"(?=({joined_pattern}))")
 
     found_vocab = [m.group(1) for m in pattern.finditer(raw_text)]
 
@@ -123,7 +139,7 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> int:
         else:
             vocab_levels.append(61)
     if vocab_levels == []:
-        return []
+        return {}
     else:
         return {
             "80%": int(np.percentile(vocab_levels, 80)),
@@ -134,6 +150,15 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> int:
 
 
 def main(input_file_path):
+    """
+    Orchestrates the Japanese text analysis process.
+
+    Loads WaniKani reference data, reads the target input file,
+    and prints the calculated difficulty levels for both kanji and vocabulary.
+
+    Args:
+        input_file_path (str): The system path to the text file to be analyzed.
+    """
 
     wanikani_kanji_path = "files/kanjis_wanikani_levels.json"
     wanikani_vocab_path = "files/vocabs_wanikani_levels.json"

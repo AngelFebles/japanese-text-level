@@ -77,13 +77,8 @@ def get_kanji_wanikani_levels(raw_text: str, wanikani_kanji: dict) -> dict:
 
     kanjis_text = re.findall(r"\p{Script=Han}", raw_text)
 
-    kanji_levels = []
+    kanji_levels = [wanikani_kanji.get(item, 61) for item in kanjis_text]
 
-    for item in kanjis_text:
-        if item in wanikani_kanji:
-            kanji_levels.append(wanikani_kanji[item])
-        else:
-            kanji_levels.append(61)
     if kanji_levels == []:
         return {}
     else:
@@ -114,9 +109,11 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> int:
 
     found_vocab = []
 
-    for word in wanikani_vocab.keys():
-        for match in re.finditer(re.escape(word), raw_text):
-            found_vocab.append(word)
+    pattern = re.compile(
+        f"(?=({'|'.join(sorted(map(re.escape, wanikani_vocab), key=len, reverse=True))}))"
+    )
+
+    found_vocab = [m.group(1) for m in pattern.finditer(raw_text)]
 
     vocab_levels = []
 

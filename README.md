@@ -8,7 +8,7 @@ Use:
 python main.py "path/to/text.txt"
 ```
 
-If no argument is given, script uses example text at ./files/text.txt
+If no argument is given, script uses example text at files/example_text.txt
 
 Example output:
 

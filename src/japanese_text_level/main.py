@@ -1,5 +1,5 @@
 """
-japanese-text-level
+japanese_text_level
 
 This module processes Japanese text files to determine the WaniKani level
 required to understand specific percentages of the kanji and vocabulary
@@ -87,6 +87,10 @@ def get_kanji_wanikani_levels(raw_text: str, wanikani_kanji: dict) -> dict:
     kanjis_text = re.findall(r"\p{Script=Han}", raw_text)
 
     kanji_levels = [wanikani_kanji.get(item, 61) for item in kanjis_text]
+
+    # print(kanji_levels)
+
+    # print(kanji_levels)
 
     if kanji_levels == []:
         return {}
@@ -180,5 +184,5 @@ if __name__ == "__main__":
         main(sys.argv[1])
 
     else:
-        input_file_path = "files/text.txt"
+        input_file_path = "files/example_text.txt"
         main(input_file_path)

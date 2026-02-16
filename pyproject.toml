@@ -23,3 +23,6 @@ pythonpath = ["src"]
 
 [project.scripts]
 wk_level = "japanese_text_level.main:main"
+
+[tool.uv]
+package = true

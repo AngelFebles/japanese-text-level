@@ -1,19 +1,24 @@
 """
 japanese_text_level
 
-This module processes Japanese text files to determine the WaniKani level
-required to understand specific percentages of the kanji and vocabulary
-found within the text.
+A CLI tool for analyzing Japanese text and determining the WaniKani
+level required to comprehend specific percentages of the kanji and
+vocabulary present in the text.
+
+The tool supports analyzing a user-provided .txt file or a bundled
+example text for demonstration purposes.
 """
 
+import argparse
 import json
-import sys
+from pathlib import Path
 
+# import sys
 import numpy as np
 import regex as re
 
 
-def get_wanikani_data(wanikani_kanji_path: str, wanikani_vocab_path: str) -> dict:
+def get_wanikani_data(wanikani_kanji_path: Path, wanikani_vocab_path: Path) -> dict:
     """
     Reads the WaniKani kanji and vocabulary JSON files and inverts them
     for fast lookups.
@@ -153,36 +158,66 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> dict:
         }
 
 
-def main(input_file_path):
+def main():
     """
-    Orchestrates the Japanese text analysis process.
+     CLI entrypoint for the japanese_text_level tool.
 
-    Loads WaniKani reference data, reads the target input file,
-    and prints the calculated difficulty levels for both kanji and vocabulary.
+    Parses command-line arguments, loads WaniKani reference data,
+    reads the target text (either from a provided file path or the
+    bundled example), and prints the calculated difficulty levels
+    for both kanji and vocabulary.
 
-    Args:
-        input_file_path (str): The system path to the text file to be analyzed.
     """
 
-    wanikani_kanji_path = "files/kanjis_wanikani_levels.json"
-    wanikani_vocab_path = "files/vocabs_wanikani_levels.json"
+    # The description for the command
+    # They appear with the -h / --help flags
 
-    wanikani_data = get_wanikani_data(wanikani_kanji_path, wanikani_vocab_path)
+    parser = argparse.ArgumentParser(
+        description="Calculate WaniKani level required to read a Japanese text."
+    )
 
-    with open(input_file_path, "r", encoding="utf-8") as f:
-        raw_text = f.read()
+    group = parser.add_mutually_exclusive_group(required=True)
 
-    wanikani_level_kanji = get_kanji_wanikani_levels(raw_text, wanikani_data["kanji"])
-    print("Wanikani levels to read kanji: ", wanikani_level_kanji)
+    group.add_argument(
+        "file",
+        nargs="?",
+        help="Path to input .txt file",
+    )
 
-    wanikani_level_vocab = get_vocab_wanikani_levels(raw_text, wanikani_data["vocab"])
-    print("Wanikani levels to read vocab: ", wanikani_level_vocab)
+    group.add_argument(
+        "--example",
+        action="store_true",
+        help="Run analysis on bundled example text",
+    )
 
+    args = parser.parse_args()
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        main(sys.argv[1])
+    # This finds the directory where main.py actually lives
+    # without this the project kinda breaks when installed as a package
+    BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+    # Now build the paths relative to the project root
+    wanikani_kanji_path = BASE_DIR / "files" / "kanjis_wanikani_levels.json"
+    wanikani_vocab_path = BASE_DIR / "files" / "vocabs_wanikani_levels.json"
+
+    wanikani_data = get_wanikani_data(
+        wanikani_kanji_path,
+        wanikani_vocab_path,
+    )
+
+    if args.example:
+        input_path = "files/example_text.txt"
+        raw_text = Path(input_path).read_text(encoding="utf-8")
+        print("\n--- Example Text ---")
+        print(raw_text)
+        print("--------------------\n")
     else:
-        input_file_path = "files/example_text.txt"
-        main(input_file_path)
+        input_path = args.file
+
+    raw_text = Path(input_path).read_text(encoding="utf-8")
+
+    kanji_levels = get_kanji_wanikani_levels(raw_text, wanikani_data["kanji"])
+    vocab_levels = get_vocab_wanikani_levels(raw_text, wanikani_data["vocab"])
+
+    print("Wanikani levels to read kanji:", kanji_levels)
+    print("Wanikani levels to read vocab:", vocab_levels)

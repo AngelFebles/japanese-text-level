@@ -1,7 +1,7 @@
 [project]
 name = "japanese_text_level"
 version = "0.1.0"
-description = "Add your description here"
+description = "Calculate WaniKani level required to read a Japanese text."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -20,3 +20,6 @@ dev = [
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[project.scripts]
+wk_level = "japanese_text_level.main:main"

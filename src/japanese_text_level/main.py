@@ -30,17 +30,19 @@ def get_wanikani_data(wanikani_kanji_path: Path, wanikani_vocab_path: Path) -> d
     This avoids repeated scans for individual lookups.
 
     Args:
+
         wanikani_kanji_path (str): Path to the kanji JSON file by level.
 
         wanikani_vocab_path (str): Path to the vocabulary JSON file by level.
 
     Returns:
+
         dict: A dictionary with two keys: "kanji" and "vocab", each mapping
-        items to their levels:
-            {
-                "kanji": dict[str, int],  # kanji character → level
-                "vocab": dict[str, int]   # vocabulary word → level
-            }
+            items to their levels:
+                {
+                    "kanji": dict[str, int],  # kanji character → level
+                    "vocab": dict[str, int]   # vocabulary word → level
+                }
     """
 
     wanikani = {"kanji": {}, "vocab": {}}
@@ -67,15 +69,15 @@ def get_kanji_wanikani_levels(raw_text: str, wanikani_kanji: dict) -> dict:
     Returns mapping of WaniKani level needed to read difference percentages of the kanji in raw_text.
 
     Args:
+
         raw_text (str): Raw input text from which kanji will be extracted.
 
         wanikani_kanji (dict[str, int]): Mapping of kanji → level.
 
     Returns:
+
         dict: mapping of the levels needed to read different percentaged of the raw text
-              {
-                percentage → level
-              }
+              { percentage → level }
 
     """
 
@@ -113,15 +115,15 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> dict:
      Returns mapping of WaniKani level needed to read difference percentages of the vocab in raw_text.
 
     Args:
+
         raw_text (str): Raw input text from which kanji will be extracted.
 
         wanikani_vocab (dict[str, int]): Mapping of vocab → level.
 
     Returns:
+
         dict: mapping of the levels needed to read different percentaged of the raw text
-              {
-                percentage → level
-              }
+              { percentage → level }
     """
 
     found_vocab = []

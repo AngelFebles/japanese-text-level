@@ -2,6 +2,7 @@
 A CLI tool for analyzing Japanese text and determining the **WaniKani** level required to read specific percentages (80%, 90%, 95%, and 100%) of the **kanji** and **vocabulary** present.
 
 
+Full documentation available [here.](https://angelfebles.github.io/japanese-text-level/)
 
 ---
 

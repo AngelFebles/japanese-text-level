@@ -160,7 +160,7 @@ def get_vocab_wanikani_levels(raw_text: str, wanikani_vocab: dict) -> dict:
         }
 
 
-def main():
+def run_analysis():
     """
      CLI entrypoint for the japanese_text_level tool.
 

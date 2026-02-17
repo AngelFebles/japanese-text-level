@@ -11,6 +11,8 @@ example text for demonstration purposes.
 
 import argparse
 import json
+from importlib.abc import Traversable
+from importlib.resources import files
 from pathlib import Path
 
 # import sys
@@ -18,7 +20,9 @@ import numpy as np
 import regex as re
 
 
-def get_wanikani_data(wanikani_kanji_path: Path, wanikani_vocab_path: Path) -> dict:
+def get_wanikani_data(
+    wanikani_kanji_path: Traversable, wanikani_vocab_path: Traversable
+) -> dict:
     """
     Reads the WaniKani kanji and vocabulary JSON files and inverts them
     for fast lookups.
@@ -31,9 +35,9 @@ def get_wanikani_data(wanikani_kanji_path: Path, wanikani_vocab_path: Path) -> d
 
     Args:
 
-        wanikani_kanji_path (str): Path to the kanji JSON file by level.
+        wanikani_kanji_path (Traversable): Path to the kanji JSON file by level.
 
-        wanikani_vocab_path (str): Path to the vocabulary JSON file by level.
+        wanikani_vocab_path (Traversable): Path to the vocabulary JSON file by level.
 
     Returns:
 
@@ -47,14 +51,14 @@ def get_wanikani_data(wanikani_kanji_path: Path, wanikani_vocab_path: Path) -> d
 
     wanikani = {"kanji": {}, "vocab": {}}
 
-    with open(wanikani_kanji_path, "r") as file:
+    with wanikani_kanji_path.open("r", encoding="utf-8") as file:
         temp = json.load(file)
 
         for level in temp:
             for kanji in temp[level]:
                 wanikani["kanji"][kanji] = int(level)
 
-    with open(wanikani_vocab_path, "r") as file:
+    with wanikani_vocab_path.open("r", encoding="utf-8") as file:
         temp = json.load(file)
 
         for level in temp:
@@ -196,11 +200,15 @@ def main():
 
     # This finds the directory where main.py actually lives
     # without this the project kinda breaks when installed as a package
-    BASE_DIR = Path(__file__).resolve().parent.parent.parent
+    # BASE_DIR = Path(__file__).resolve().parent.parent.parent
+    data_dir = files("japanese_text_level").joinpath("files")
 
     # Now build the paths relative to the project root
-    wanikani_kanji_path = BASE_DIR / "files" / "kanjis_wanikani_levels.json"
-    wanikani_vocab_path = BASE_DIR / "files" / "vocabs_wanikani_levels.json"
+    wanikani_kanji_path = data_dir / "kanjis_wanikani_levels.json"
+    wanikani_vocab_path = data_dir / "vocabs_wanikani_levels.json"
+
+    # wanikani_kanji_path = BASE_DIR / "files" / "kanjis_wanikani_levels.json"
+    # wanikani_vocab_path = BASE_DIR / "files" / "vocabs_wanikani_levels.json"
 
     wanikani_data = get_wanikani_data(
         wanikani_kanji_path,
@@ -208,15 +216,14 @@ def main():
     )
 
     if args.example:
-        input_path = "files/example_text.txt"
-        raw_text = Path(input_path).read_text(encoding="utf-8")
+        example_path = data_dir / "example_text.txt"
+        raw_text = example_path.read_text(encoding="utf-8")
+
         print("\n--- Example Text ---")
         print(raw_text)
         print("--------------------\n")
     else:
-        input_path = args.file
-
-    raw_text = Path(input_path).read_text(encoding="utf-8")
+        raw_text = Path(args.file).read_text(encoding="utf-8")
 
     kanji_levels = get_kanji_wanikani_levels(raw_text, wanikani_data["kanji"])
     vocab_levels = get_vocab_wanikani_levels(raw_text, wanikani_data["vocab"])

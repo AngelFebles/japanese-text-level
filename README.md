@@ -4,6 +4,7 @@ A CLI tool for analyzing Japanese text and determining reading difficulty levels
 
 
 Full documentation available [here.](https://angelfebles.github.io/japanese-text-level/)
+See [ROADMAP.md](./ROADMAP.md) for the full development plan.
 
 ---
 
@@ -18,20 +19,21 @@ pipx install "git+https://github.com/AngelFebles/japanese-text-level"
 ```
 
 ## Usage
-### Synopsis
+
+### CLI Synopsis
 ```
 jp-level <system> <input-type> [target | --example]
 ```
 
-
 | Component | Options | Description |
 | :--- | :--- | :--- |
 | **SYSTEM** | wk | WaniKani (Kanji/Vocab levels 1-60) |
-| | jlpt | Coming Soon (N5 to N1) |
+|  | jlpt | Coming Soon (N5 to N1) |
 | **INPUT_TYPE** | text | Standard .txt file processing |
-| | url | Planned (Direct website scraping) |
+|  | url | Planned (Direct website scraping) |
 | **TARGET** | path/to/file | Local path to your Japanese text |
-| | --example | Runs the bundled sample text |
+|  | --example | Runs the bundled sample text |
+
 
 ### Examples
 Analyze a local file:
@@ -39,7 +41,7 @@ Analyze a local file:
 jp-level wk text path/to/file.txt
 ```
 Or the bundled example:
-```
+```bash
 jp-level wk text --example
 ```
 Which outputs:
@@ -60,24 +62,25 @@ Percentage | LV Kanji | LV Vocab
 
 
 ## Development
+
 ### Instalation
 To work on the project locally, first clone project:
-```
+```bash
 git clone https://github.com/AngelFebles/japanese-text-level
 cd japanese-text-level
 ```
 and then either install with **pip**:
-```
+```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 or, if using **uv**, simply run:
-```
+```bash
 uv sync
+
 ```
 ### Quality Checks
-
 ```bash
 pytest        # Unit tests
 ruff check .  # Linting
@@ -87,8 +90,7 @@ ty check .    # Type checking
 
 ### Documentation
 Documentation website is handled with mkdocs. To preview localy:
-
-```
+```bash
 mkdocs serve
 ```
 

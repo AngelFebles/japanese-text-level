@@ -97,7 +97,8 @@ mkdocs serve
 
 ### Project Structure
 * src/japanese_text_level/
-    * main.py - CLI Entrypoint and Argument Parsing.
+    * /cli
+        * main.py - CLI Entrypoint and Argument Parsing.
     * systems/ - Analysis logic for different grading systems (e.g., wk.py).
     * files/ - Reference JSON datasets and example files.
 * test/ - Automated test suite.

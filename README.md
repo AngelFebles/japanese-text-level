@@ -4,6 +4,7 @@ A CLI tool for analyzing Japanese text and determining reading difficulty levels
 
 
 Full documentation available [here.](https://angelfebles.github.io/japanese-text-level/)
+
 See [ROADMAP.md](./ROADMAP.md) for the full development plan.
 
 ---

@@ -21,7 +21,7 @@ dev = [
 pythonpath = ["src"]
 
 [project.scripts]
-jp-level = "japanese_text_level.main:main"
+jp-level = "japanese_text_level.cli.main:main"
 
 [tool.uv]
 package = true

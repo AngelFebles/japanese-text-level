@@ -224,6 +224,7 @@ name = "japanese-text-level"
 version = "0.1.1"
 source = { editable = "." }
 dependencies = [
+    { name = "mkdocstrings", extra = ["python"] },
     { name = "numpy" },
     { name = "regex" },
 ]
@@ -242,6 +243,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0.3" },
     { name = "numpy", specifier = ">=2.4.2" },
     { name = "regex", specifier = ">=2026.1.15" },
 ]

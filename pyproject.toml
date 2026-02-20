@@ -5,6 +5,7 @@ description = "Calculate WaniKani level required to read a Japanese text."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "mkdocstrings[python]>=1.0.3",
     "numpy>=2.4.2",
     "regex>=2026.1.15",
 ]
@@ -25,7 +26,7 @@ dev = [
 pythonpath = ["src"]
 
 [project.scripts]
-wk_level = "japanese_text_level.main:run_analysis"
+jp-level = "japanese_text_level.main:main"
 
 [tool.uv]
 package = true

@@ -1,4 +1,4 @@
-site_name: japanese-text-level
+site_name: japanese_text_level
 
 theme:
   name: material
@@ -6,11 +6,16 @@ theme:
     scheme: slate
 
 nav:
-  # - Home: README.md
   - Home: index.md
+  - Roadmap: ROADMAP.md
   - Main: main.md
+  - Wanikani: wk.md
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]  # search packages in the src folder
   - search
-  - include-markdown
+  - include-markdown:
+     rewrite_relative_urls: false

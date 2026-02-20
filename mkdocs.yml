@@ -1,0 +1,21 @@
+site_name: japanese_text_level
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+
+nav:
+  - Home: index.md
+  - Roadmap: ROADMAP.md
+  - Main: main.md
+  - Wanikani: wk.md
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]  # search packages in the src folder
+  - search
+  - include-markdown:
+     rewrite_relative_urls: false

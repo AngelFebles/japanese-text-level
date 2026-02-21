@@ -355,33 +355,27 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
-web = [
-    { name = "fastapi", extra = ["standard"] },
-]
-
-[package.dev-dependencies]
 dev = [
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "ruff" },
     { name = "ty" },
 ]
+web = [
+    { name = "fastapi", extra = ["standard"] },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], marker = "extra == 'web'", specifier = ">=0.129.0" },
     { name = "numpy", specifier = ">=2.4.2" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.5.1" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.2" },
     { name = "regex", specifier = ">=2026.1.15" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.0" },
+    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.17" },
 ]
-provides-extras = ["web"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pre-commit", specifier = ">=4.5.1" },
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "ruff", specifier = ">=0.15.0" },
-    { name = "ty", specifier = ">=0.0.17" },
-]
+provides-extras = ["web", "dev"]
 
 [[package]]
 name = "jinja2"

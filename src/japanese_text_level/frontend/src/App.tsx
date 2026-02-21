@@ -20,6 +20,24 @@ function App() {
     setLoading(false);
   };
 
+  const loadExample = () => {
+    // From NHK NEws Easy (https://news.web.nhk/news/easy/ne2026022012083/ne2026022012083.html)
+    const example = `
+千葉県の動物園ぬいぐるみで遊ぶ子どもの猿が人気
+
+千葉県市川市の動物園で、ぬいぐるみで遊ぶ子どもの猿が人気になっています。
+
+この猿は「パンチ」という名前で、去年7月に生まれました。母親が世話をしなかったので、動物園の人がミルクをあげて育てました。
+
+動物園の人がオランウータンのぬいぐるみを「パンチ」にあげると、いつも持って歩くようになりました。ぬいぐるみを母親の代わりのようにして抱きついて遊んでいます。
+
+動物園には、「パンチ」を見に、たくさんの人が来ています。動物園の人は「思ったより多くの人が来て驚いています」と話していました。
+
+(From NHK News Easy (https://news.web.nhk/news/easy/ne2026022012083/ne2026022012083.html))
+`;
+    setText(example);
+  };
+
   const getLevelClass = (level: number) => {
     if (level <= 10) return "lvl-beginner";
     if (level <= 20) return "lvl-pleasant";
@@ -42,6 +60,9 @@ function App() {
         />
 
         <br />
+        <button onClick={loadExample} className="example-btn">
+          Try an Example
+        </button>
 
         <button onClick={handleAnalyze} disabled={loading}>
           {loading ? "Analyzing..." : "Analyze Level"}

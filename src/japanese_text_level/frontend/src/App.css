@@ -1,0 +1,184 @@
+/* Container & Layout */
+
+#root{
+  width: 100%;
+}
+
+.app-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+  font-family: sans-serif;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Form Elements */
+.text-input {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Result Sections */
+.results-grid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+
+
+.section-title-kanji {
+  text-align: center;
+  border-bottom: 2px solid #ff00aa;
+  color: #ff00aa;
+}
+
+.section-title-vocab {
+  text-align: center;
+  border-bottom: 2px solid #00aaff;
+  color: #00aaff;
+}
+
+/* Individual Badges */
+.badge-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.level-badge {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 60px;
+}
+
+.level-number {
+  font-size: 18px;
+  font-weight: 800;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
+}
+
+.level-char {
+  font-size: 12px;
+  color: #666;
+}
+
+
+.level-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #ff00aa;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Makes the movement smooth */
+}
+
+
+.results-grid section:last-child .level-badge:hover {
+  border-color: #00aaff;
+}
+
+
+button {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+
+
+/* Level Range Colors */
+.lvl-beginner {
+  background-color: #00aaff;
+  color: white;
+  border-color: #008ecc;
+}
+
+.lvl-pleasant {
+  background-color: #2eb872;
+  color: white;
+  border-color: #248f59;
+}
+
+.lvl-painful {
+  background-color: #ff00aa;
+  border-color: #cc0088;
+}
+
+.lvl-death {
+  background-color: #a100f1;
+  color: white;
+  border-color: #8100c1;
+}
+
+.lvl-hell {
+  background-color: #dd4433; /* Burnt Orange/Red for the "Burn" levels */
+  color: white;
+  border-color: #b33629;
+}
+
+
+.level-badge .level-char {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: bold;
+}
+
+.level-badge .level-number {
+  color: white;
+  font-weight: 800;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Legend Container */
+.legend {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin: 0px;
+  /* margin-bottom: 20px; */
+  font-size: 13px;
+  font-weight: 600;
+  /* color: #444; */
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.dot {
+  font-size: 16px;
+}
+
+/* Dot Colors - Matching your levels */
+.dot-beginner { color: #00aaff; }
+.dot-pleasant  { color: #2eb872; }
+.dot-painful   { color: #ff00aa; }
+.dot-death     { color: #a100f1; }
+.dot-hell      { color: #dd4433; }

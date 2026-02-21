@@ -6,8 +6,8 @@
 
 ## v2.0 - Web interface
 
+* [x] FastAPI Wrapper.
 * [ ] React/Vue interface.
-* [ ] FastAPI Wrapper.
 * [ ] Containerized environment for cloud deployment with Docker.
 
 
